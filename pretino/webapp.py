@@ -86,7 +86,7 @@ async def get_orders_from_pretix(
     # Reverse mapping for faster lookups
     question_mapping = {value: key for key, value in question_mapping.items()}
 
-    url = f"{base_url}?require_approval=true"
+    url = f"{base_url}?require_approval=false"
     while url:
         try:
             async with httpx.AsyncClient() as client:
