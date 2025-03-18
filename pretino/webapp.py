@@ -1,10 +1,10 @@
 """USGI webapp"""
 
 import logging
-from collections.abc import Generator
+from collections.abc import AsyncIterable
 from typing import Optional, TypedDict
 
-import requests
+import httpx
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import APIKeyHeader
 
@@ -60,9 +60,9 @@ def authorize_api_key(settings: Settings, api_key: str) -> tuple[bool, bool]:
     return False, False
 
 
-def get_orders_from_pretix(
+async def get_orders_from_pretix(
     organizer: str, event_name: str, api_token: str, question_mapping: dict[str, str]
-) -> Generator[Order]:
+) -> AsyncIterable[Order]:
     """
     Downloads order data from a Pretix.
 
@@ -89,28 +89,29 @@ def get_orders_from_pretix(
     url = f"{base_url}?require_approval=true"
     while url:
         try:
-            response = requests.get(url, headers=headers, timeout=30)
-            response.raise_for_status()
-            data = response.json()
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url, headers=headers, timeout=30)
+                response.raise_for_status()
+                data = response.json()
 
-            for result in data["results"]:
-                for position in result["positions"]:
-                    # Import answers to "questions"
-                    order = {
-                        question_mapping[answer["question_identifier"]]: answer["answer"]
-                        for answer in position["answers"]
-                        if answer["question_identifier"] in question_mapping
-                    }
+                for result in data["results"]:
+                    for position in result["positions"]:
+                        # Import answers to "questions"
+                        order = {
+                            question_mapping[answer["question_identifier"]]: answer["answer"]
+                            for answer in position["answers"]
+                            if answer["question_identifier"] in question_mapping
+                        }
 
-                    # Import static fields
-                    order["name"] = position["attendee_name"]
-                    order["email"] = position["attendee_email"]
-                    order["order_id"] = position["order"]
+                        # Import static fields
+                        order["name"] = position["attendee_name"]
+                        order["email"] = position["attendee_email"]
+                        order["order_id"] = position["order"]
 
-                    yield Order(**order)
+                        yield Order(**order)
 
             url = data["next"]
-        except requests.exceptions.RequestException as error:
+        except httpx.RequestError as error:
             logger.error("Error during API request: %s", error)
             break
 
@@ -144,7 +145,7 @@ def create_app(settings: Optional[Settings] = False) -> FastAPI:
 
         return [
             Attendee(company=order["company"], name=order["name"], asn=order["asn"])
-            for order in get_orders_from_pretix(
+            async for order in get_orders_from_pretix(
                 settings.ORGANIZER,
                 settings.EVENT_NAME,
                 settings.API_TOKEN,
