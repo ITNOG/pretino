@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "company": {
+      "type": "string"
+    },
+    "job_title": {
+      "type": "string"
+    },
+    "bio_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "asn": {
+      "type": "string"
+    },
+    "tshirt_size": {
+      "type": "string",
+    },
+    "food_intolerance": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "company",
+    "job_title",
+    "bio_url",
+    "asn",
+    "tshirt_size",
+    "food_intolerance"
+  ]
+}
