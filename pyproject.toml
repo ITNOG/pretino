@@ -1,0 +1,41 @@
+[project]
+name = "pretino"
+version = "0.1.0"
+description = "Pretix connector for the ITNOG events"
+authors = [
+    {name = "Marco Mazetti",email = "marco@itnog.it"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pydantic-settings (>=2.8.0,<3.0.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "fastapi (>=0.115.11,<0.116.0)",
+    "uvicorn (>=0.34.0,<0.35.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group."=dev".dependencies]
+black = "^25.1.0"
+flake8 = "^7.1.2"
+isort = "^6.0.0"
+bandit = "^1.8.3"
+pylint = "^3.3.4"
+
+
+[tool.poetry.group.dev.dependencies]
+bandit = "^1.8.3"
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 100
+
+[tool.poetry.scripts]
+pretino = "pretino.__main__:main"
