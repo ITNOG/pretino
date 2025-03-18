@@ -1,6 +1,6 @@
 #!/bin/env python3
 
-"""Pretix connector for the ITNOG events"""
+"""Pretino is a web frontend for Pretix API for the ITNOG events"""
 
 import logging
 
