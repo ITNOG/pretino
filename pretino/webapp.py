@@ -130,11 +130,14 @@ def create_app(settings: Optional[Settings] = False) -> FastAPI:
     FasAPI: Application instance
     """
     settings = settings or Settings()
-    webapp = FastAPI()
+    webapp = FastAPI(
+        title="Pretino",
+        summary="Pretino is a web frontend for Pretix API for the ITNOG events",
+    )
 
     api_key_header_scheme = APIKeyHeader(name="x-pretino-key")
 
-    @webapp.get("/attendees")
+    @webapp.get("/attendees", tags=["Attendees"])
     async def get_attendees(api_key: str = Depends(api_key_header_scheme)) -> list[Attendee]:
         authorized, _ = authorize_api_key(settings, api_key)
         if not authorized:
@@ -145,7 +148,7 @@ def create_app(settings: Optional[Settings] = False) -> FastAPI:
 
         return [
             Attendee(company=order["company"], name=order["name"], asn=order["asn"])
-            async for order in get_orders_from_pretix(
+            async for order in get_orders_from_pretix(  # NOSONAR
                 settings.ORGANIZER,
                 settings.EVENT_NAME,
                 settings.API_TOKEN,
@@ -153,7 +156,7 @@ def create_app(settings: Optional[Settings] = False) -> FastAPI:
             )
         ]
 
-    @webapp.get("/orders")
+    @webapp.get("/orders", tags=["Orders"])
     async def get_orders(api_key: str = Depends(api_key_header_scheme)) -> list[Order]:
         authorized, privileged = authorize_api_key(settings, api_key)
         if not authorized:

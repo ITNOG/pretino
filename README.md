@@ -1,6 +1,6 @@
 # Pretino
 
-Pretino is a web application that transforms the order objects returned by Pretix for an ITNOG event in a format that the website and meeting buttler can use.
+Pretino is a web frontend for Pretix API for the ITNOG events.
 
 ## Configuration
  - PRETINO_ORGANIZER: Organizer name as set on Pretix
