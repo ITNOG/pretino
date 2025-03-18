@@ -1,6 +1,6 @@
 # Pretino
 
-Pretino is a web frontend for Pretix API for the ITNOG events.
+Pretino is a web frontend for the Pretix API for the ITNOG events.
 
 ## Configuration
  - PRETINO_ORGANIZER: Organizer name as set on Pretix

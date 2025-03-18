@@ -132,7 +132,7 @@ def create_app(settings: Optional[Settings] = False) -> FastAPI:
     settings = settings or Settings()
     webapp = FastAPI(
         title="Pretino",
-        summary="Pretino is a web frontend for Pretix API for the ITNOG events",
+        summary="Pretino is a web frontend for the Pretix API for the ITNOG events",
     )
 
     api_key_header_scheme = APIKeyHeader(name="x-pretino-key")
