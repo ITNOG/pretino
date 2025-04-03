@@ -2,7 +2,7 @@
 
 import logging
 from collections.abc import AsyncIterable
-from typing import Optional, TypedDict
+from typing import Optional, TypedDict, get_type_hints
 
 import httpx
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -36,6 +36,7 @@ class Order(TypedDict):
     order_id: str
     bio_url: str
     tshirt_size: str
+    secret: str
 
 
 def authorize_api_key(settings: Settings, api_key: str) -> tuple[bool, bool]:
@@ -96,17 +97,20 @@ async def get_orders_from_pretix(
 
                 for result in data["results"]:
                     for position in result["positions"]:
+                        order = {key: value() for key, value in get_type_hints(Order).items()}
+
                         # Import answers to "questions"
-                        order = {
-                            question_mapping[answer["question_identifier"]]: answer["answer"]
-                            for answer in position["answers"]
-                            if answer["question_identifier"] in question_mapping
-                        }
+                        for answer in position["answers"]:
+                            if answer["question_identifier"] in question_mapping:
+                                order[question_mapping[answer["question_identifier"]]] = answer[
+                                    "answer"
+                                ]
 
                         # Import static fields
                         order["name"] = position["attendee_name"]
                         order["email"] = position["attendee_email"]
                         order["order_id"] = position["order"]
+                        order["secret"] = position["secret"]
 
                         yield Order(**order)
 
@@ -170,13 +174,14 @@ def create_app(settings: Optional[Settings] = False) -> FastAPI:
                 detail="Unprivileged API key",
             )
 
-        return list(
-            get_orders_from_pretix(
+        return [
+            Order(**order)
+            async for order in get_orders_from_pretix(  # NOSONAR
                 settings.ORGANIZER,
                 settings.EVENT_NAME,
                 settings.API_TOKEN,
                 settings.QUESTION_MAPPING.model_dump(),
             )
-        )
+        ]
 
     return webapp
