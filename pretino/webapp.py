@@ -36,7 +36,7 @@ class Order(TypedDict):
     order_id: str
     bio_url: str
     tshirt_size: str
-    secret: str
+    qrcode: str
 
 
 def authorize_api_key(settings: Settings, api_key: str) -> tuple[bool, bool]:
@@ -110,7 +110,7 @@ async def get_orders_from_pretix(
                         order["name"] = position["attendee_name"]
                         order["email"] = position["attendee_email"]
                         order["order_id"] = position["order"]
-                        order["secret"] = position["secret"]
+                        order["qrcode"] = position["secret"]
 
                         yield Order(**order)
 
