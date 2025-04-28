@@ -24,7 +24,7 @@ class ApiKey(BaseModel):
     """
 
     key: str
-    privileged: bool = False
+    privileged: bool
 
 
 class QuestionMapping(BaseSettings):
@@ -38,6 +38,7 @@ class QuestionMapping(BaseSettings):
     asn: str
     tshirt_size: str
     food_intolerance: str
+    dinner: str
 
 
 class Settings(BaseSettings):

@@ -37,6 +37,7 @@ class Order(TypedDict):
     bio_url: str
     tshirt_size: str
     qrcode: str
+    dinner: bool = False
 
 
 def authorize_api_key(settings: Settings, api_key: str) -> tuple[bool, bool]:
