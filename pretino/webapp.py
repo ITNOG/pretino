@@ -100,7 +100,6 @@ async def get_orders_from_pretix(
 
                 for result in data["results"]:
                     for position in result["positions"]:
-                        print(position)
                         order = {key: value() for key, value in get_type_hints(Order).items()}
 
                         # Import answers to "questions"
