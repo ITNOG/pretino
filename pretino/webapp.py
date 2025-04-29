@@ -19,6 +19,7 @@ class Attendee(TypedDict):
     """
 
     name: str
+    surname: str
     company: str
     asn: str
 
@@ -29,6 +30,7 @@ class Order(TypedDict):
     """
 
     name: str
+    surname: str
     company: str
     asn: str
     job_title: str
@@ -98,6 +100,7 @@ async def get_orders_from_pretix(
 
                 for result in data["results"]:
                     for position in result["positions"]:
+                        print(position)
                         order = {key: value() for key, value in get_type_hints(Order).items()}
 
                         # Import answers to "questions"
@@ -108,7 +111,8 @@ async def get_orders_from_pretix(
                                 ]
 
                         # Import static fields
-                        order["name"] = position["attendee_name"]
+                        order["name"] = position["attendee_name_parts"]["given_name"]
+                        order["surname"] = position["attendee_name_parts"]["family_name"]
                         order["email"] = position["attendee_email"]
                         order["order_id"] = position["order"]
                         order["qrcode"] = position["secret"]
@@ -152,7 +156,12 @@ def create_app(settings: Optional[Settings] = False) -> FastAPI:
             )
 
         return [
-            Attendee(company=order["company"], name=order["name"], asn=order["asn"])
+            Attendee(
+                company=order["company"],
+                name=order["name"],
+                surname=order["surname"],
+                asn=order["asn"],
+            )
             async for order in get_orders_from_pretix(  # NOSONAR
                 settings.ORGANIZER,
                 settings.EVENT_NAME,
