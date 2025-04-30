@@ -99,6 +99,10 @@ async def get_orders_from_pretix(
                 data = response.json()
 
                 for result in data["results"]:
+                    if result["status"].lower() != "p":
+                        # Only accept "paid"
+                        continue
+
                     for position in result["positions"]:
                         order = {key: value() for key, value in get_type_hints(Order).items()}
 
