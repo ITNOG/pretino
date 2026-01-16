@@ -12,5 +12,5 @@ RUN pip install poetry \
 # Expose the port your application listens on (adjust as needed)
 EXPOSE 8000
 
-# Set the command to run the application
-CMD ["poetry", "run", "python", "-m", "pretino"]
+# Set the entrypoint to run the application
+ENTRYPOINT ["poetry", "run", "python", "-m", "pretino"]
