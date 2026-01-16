@@ -20,6 +20,9 @@
     },
     "food_intolerance": {
       "type": "string"
+    },
+    "dinner": {
+      "type": "boolean"
     }
   },
   "required": [
@@ -28,6 +31,7 @@
     "bio_url",
     "asn",
     "tshirt_size",
-    "food_intolerance"
+    "food_intolerance",
+    "dinner"
   ]
 }
